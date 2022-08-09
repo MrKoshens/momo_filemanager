@@ -1,0 +1,36 @@
+#!/bin/bash
+
+cd 
+#temp () {
+#    touch temp69
+#    echo -e '#!/bin/bash \n cd .. \n ./temp69  \n chmod +x temp69 ' >> temp69
+#   chmod +x temp69
+#    ./temp69
+#}
+
+change_dir () {
+    filename=$(ls | rofi -dmenu -p)
+    file $filename
+    filepath=$(readlink -f $filename)
+    echo $filename
+    filetype=$(file $filename | awk -F[:,] '{print $2}')
+    echo $filetype
+    echo $filepath
+
+    if [[ $filetype == ' directory' ]]; then
+        cd $filepath
+#        temp
+        change_dir
+    elif [[ $filetype == ' PDF document' ]]; then
+        zathura $filepath
+    elif [[ $filetype == ' ISO Media' || $filetype == ' MPEG ADTS' || $filetype == ' Audio file with ID3 version 2.3.0' ]]; then
+        mpv $filepath
+    elif [[ $filetype == ' ASCII text' || $filetype == ' Bourne-Again shell script' || $filetype == ' HTML document' ]]; then
+        vim $filepath
+    elif [[ $filetype == ' JPEG image data' || $filetype == ' PNG image data' ]]; then
+        sxiv $filepath
+
+    fi
+}
+change_dir
+
